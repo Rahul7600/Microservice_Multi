@@ -14,7 +14,7 @@ pipeline {
             }
         }
         
-        stage('Push Docker Image') {
+        stage('Docker Image Push to GCP Artifacts') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
