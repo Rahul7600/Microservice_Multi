@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t jagdish0707/adservice:latest ."
+                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest ."
                     }
                 }
             }
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push jagdish0707/adservice:latest "
+                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest"
                     }
                 }
             }
