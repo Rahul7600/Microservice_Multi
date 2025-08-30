@@ -5,10 +5,8 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    dir('src') {
-                        withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                            sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/cartservice:latest ."
-                        }
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest ."
                     }
                 }
             }
@@ -18,7 +16,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/cartservice:latest"
+                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest"
                     }
                 }
             }
