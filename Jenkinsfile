@@ -6,21 +6,20 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t jagdish0707/currencyservice:latest ."
+                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/currencyservice:latest ."
                     }
                 }
             }
         }
         
-        stage('Push Docker Image') {
+        stage('Docker Image Push to GCP Artifacts') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push jagdish0707/currencyservice:latest "
+                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/currencyservice:latest"
                     }
                 }
             }
         }
     }
 }
-
