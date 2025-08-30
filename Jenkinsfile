@@ -1,33 +1,43 @@
 pipeline {
     agent any
 
+    parameters {
+        choice(
+            name: 'SERVICE',
+            choices: [
+                'adservice',
+                'cartservice',
+                'checkoutservice',
+                'currencyservice',
+                'emailsservice',
+                'frontend',
+                'loadgenerator',
+                'main',
+                'paymentservice',
+                'productcatalogservice',
+                'recommendationservice',
+                'shippingservice'
+            ],
+            description: 'Choose the service to deploy'
+        )
+    }
+
     stages {
-        stage('Deploy To Kubernetes') {
+        stage('Select Service') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[
-                    caCertificate: '', 
-                    clusterName: 'jagdish-cluster', 
-                    contextName: '', 
-                    credentialsId: 'k8-token', 
-                    namespace: 'webapps', 
-                    serverUrl: 'https://0658E0C21B05F8B01AB7A38121469F3F.gr7.us-east-1.eks.amazonaws.com'
-                ]]) {
-                    sh "kubectl apply -f deployment-service.yml"
+                script {
+                    echo "Selected service: ${params.SERVICE}"
                 }
             }
         }
-        
-        stage('verify Deployment') {
+
+        stage('Deploy') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[
-                    caCertificate: '', 
-                    clusterName: 'jagdish-cluster', 
-                    contextName: '', 
-                    credentialsId: 'k8-token', 
-                    namespace: 'webapps', 
-                    serverUrl: 'https://0658E0C21B05F8B01AB7A38121469F3F.gr7.us-east-1.eks.amazonaws.com'
-                ]]) {
-                    sh "kubectl get svc -n webapps"
+                script {
+                    // Example of deploying or building the selected service
+                    echo "Deploying the ${params.SERVICE} service..."
+                    // For example, you can call different scripts or Docker commands based on the selected service:
+                    // sh "./deploy ${params.SERVICE}"
                 }
             }
         }
