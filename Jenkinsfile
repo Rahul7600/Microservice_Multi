@@ -6,11 +6,10 @@ pipeline {
             steps {
                 script {
                     dir('src') {
-
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t jagdish0707/cartservice:latest ."
-                    }
+                        withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                            sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/cartservice:latest ."
                         }
+                    }
                 }
             }
         }
@@ -19,7 +18,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push jagdish0707/cartservice:latest "
+                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/cartservice:latest"
                     }
                 }
             }
