@@ -6,17 +6,17 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t jagdish0707/checkoutservice:latest ."
+                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/checkoutservice:latest ."
                     }
                 }
             }
         }
         
-        stage('Push Docker Image') {
+        stage('Docker Image Push to GCP Artifacts') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push jagdish0707/checkoutservice:latest "
+                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/checkoutservice:latest"
                     }
                 }
             }
