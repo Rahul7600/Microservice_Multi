@@ -20,7 +20,7 @@ spec:
           image: asia-south1-docker.pkg.dev/kubernetes-470606/repos/productcatalogservice:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 3550
           resources:
             requests:
               cpu: "100m"
