@@ -19,7 +19,7 @@ spec:
       - name: adservice
         image: asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 9555
         resources:
           requests:
             cpu: "100m"
@@ -38,7 +38,7 @@ metadata:
 spec:
   selector:
     app: adservice
-ports:
+  ports:
   - name: grpc
     port: 9555
     targetPort: 9555
