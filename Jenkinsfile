@@ -2,37 +2,43 @@ pipeline {
     agent any
 
     environment {
-        // Reference the Jenkins secret file for GCP authentication
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')
+        PROJECT_ID = 'kubernetes-470606'
+        CLUSTER_NAME = 'ecommerce'
+        CLUSTER_ZONE = 'asia-south1-a'
     }
 
     stages {
         stage('Authenticate Docker to GCP') {
             steps {
                 script {
-                    // Authenticate Docker with GCP Artifact Registry
                     sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
                     sh "gcloud auth configure-docker asia-south1-docker.pkg.dev"
                 }
             }
         }
-
+        
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/frontend:latest ."
-                    }
+                    sh "docker build -t asia-south1-docker.pkg.dev/${PROJECT_ID}/repos/frontend:latest ."
+                }
+            }
+        }
+        
+        stage('Push Docker Image to GCP Artifacts') {
+            steps {
+                script {
+                    sh "docker push asia-south1-docker.pkg.dev/${PROJECT_ID}/repos/frontend:latest"
                 }
             }
         }
 
-        stage('Docker Image Push to GCP Artifacts') {
+        stage('Deploy to GKE') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/frontend:latest"
-                    }
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID}"
+                    sh "kubectl apply -f frontend.yaml"
                 }
             }
         }
