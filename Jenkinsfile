@@ -2,15 +2,18 @@ pipeline {
     agent any
 
     environment {
-        // Reference the Jenkins secret file for GCP authentication
+        // Jenkins secret for GCP service account JSON key
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')
+        PROJECT_ID = "kubernetes-470606"
+        CLUSTER_NAME = "gke-ecommerce"      // <-- Replace with your GKE cluster name
+        CLUSTER_ZONE = "asia-south1-a"      // <-- Replace with your GKE cluster zone
+        IMAGE = "asia-south1-docker.pkg.dev/kubernetes-470606/repos/productcatalogservice:latest"
     }
 
     stages {
         stage('Authenticate Docker to GCP') {
             steps {
                 script {
-                    // Authenticate Docker with GCP Artifact Registry
                     sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
                     sh "gcloud auth configure-docker asia-south1-docker.pkg.dev"
                 }
@@ -21,7 +24,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/productcatalogservice:latest ."
+                        sh "docker build -t ${IMAGE} ."
                     }
                 }
             }
@@ -31,8 +34,24 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/productcatalogservice:latest"
+                        sh "docker push ${IMAGE}"
                     }
+                }
+            }
+        }
+
+        stage('Authenticate kubectl with GKE') {
+            steps {
+                script {
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID}"
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    sh "kubectl apply -f productcatalogservice.yaml"
                 }
             }
         }
