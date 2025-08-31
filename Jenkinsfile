@@ -2,15 +2,16 @@ pipeline {
     agent any
 
     environment {
-        // Use Jenkins credential for GCP service account key
         GOOGLE_APPLICATION_CREDENTIALS = credentials('gcp-service-account')
+        PROJECT_ID = 'kubernetes-470606'
+        CLUSTER_NAME = 'ecommerce'
+        CLUSTER_ZONE = 'asia-south1-a'
     }
 
     stages {
         stage('Authenticate Docker to GCP') {
             steps {
                 script {
-                    // Authenticate Docker with GCP Artifact Registry
                     sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
                     sh "gcloud auth configure-docker asia-south1-docker.pkg.dev"
                 }
@@ -20,9 +21,7 @@ pipeline {
         stage('Build & Tag Docker Image') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest ."
-                    }
+                    sh "docker build -t asia-south1-docker.pkg.dev/${PROJECT_ID}/repos/adservice:latest ."
                 }
             }
         }
@@ -30,9 +29,16 @@ pipeline {
         stage('Push Docker Image to GCP Artifacts') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push asia-south1-docker.pkg.dev/kubernetes-470606/repos/adservice:latest"
-                    }
+                    sh "docker push asia-south1-docker.pkg.dev/${PROJECT_ID}/repos/adservice:latest"
+                }
+            }
+        }
+
+        stage('Deploy to GKE') {
+            steps {
+                script {
+                    sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID}"
+                    sh "kubectl apply -f adservice.yaml"
                 }
             }
         }
