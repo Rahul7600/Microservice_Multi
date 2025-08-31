@@ -20,7 +20,7 @@ spec:
           image: asia-south1-docker.pkg.dev/kubernetes-470606/repos/currencyservice:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 7000   # Correct port
           resources:
             requests:
               cpu: "100m"
@@ -28,6 +28,9 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
+          env:
+            - name: PORT
+              value: "7000"  # Must define this
 ---
 apiVersion: v1
 kind: Service
@@ -41,6 +44,6 @@ spec:
     app: currencyservice
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 8080
+      port: 7000
+      targetPort: 7000
   type: ClusterIP
