@@ -42,5 +42,5 @@ spec:
   ports:
     - protocol: TCP
       port: 3550
-      targetPort: 8080
+      targetPort: 3550
   type: ClusterIP
