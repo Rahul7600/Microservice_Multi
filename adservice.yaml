@@ -38,8 +38,8 @@ metadata:
 spec:
   selector:
     app: adservice
-  ports:
-    - port: 80
-      targetPort: 8080
-      protocol: TCP
+ports:
+  - name: grpc
+    port: 9555
+    targetPort: 9555
   type: ClusterIP
