@@ -41,6 +41,6 @@ spec:
     app: productcatalogservice
   ports:
     - protocol: TCP
-      port: 80
+      port: 3550
       targetPort: 8080
   type: ClusterIP
